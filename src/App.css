@@ -1,20 +1,75 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f6fa;
+  color: #2f3640;
+}
+
 .App {
   text-align: center;
+  padding: 20px;
+}
+
+.Editor {
+  margin-top: 20px;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .Editor textarea {
-  width: 80%;
-  height: 200px;
-  margin: 10px;
-  padding: 10px;
+  width: 100%;
+  height: 180px;
+  padding: 15px;
+  border: 1px solid #dcdde1;
+  border-radius: 8px;
+  resize: none;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.Editor label {
+  display: inline-block;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.Editor input[type="number"],
+.Editor input[type="color"],
+.Editor select {
+  padding: 5px;
+  margin: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
 button {
+  padding: 10px 20px;
+  background-color: #00a8ff;
+  border: none;
+  border-radius: 6px;
+  color: white;
   margin: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0097e6;
 }
 
 .TextDisplay {
   margin-top: 20px;
-  padding: 10px;
-  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
 }
