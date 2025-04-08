@@ -1,25 +1,29 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import Editor from './Editor';
+import TextDisplay from './TextDisplay';
+import Storage from './Storage';
 import './App.css';
 
-function App() {
+const App = () => {
+  const [text, setText] = useState('');
+  const [font, setFont] = useState('Arial');
+  const [fontSize, setFontSize] = useState(16);
+  const [textColor, setTextColor] = useState('#000000');
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Text Editor</h1>
+      <TextDisplay text={text} font={font} fontSize={fontSize} textColor={textColor} />
+      <Editor
+        text={text}
+        setText={setText}
+        setFont={setFont}
+        setFontSize={setFontSize}
+        setTextColor={setTextColor}
+      />
+      <Storage text={text} />
     </div>
   );
-}
+};
 
 export default App;
