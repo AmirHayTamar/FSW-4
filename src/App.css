@@ -22,7 +22,7 @@ body {
 }
 
 .Editor textarea {
-  width: 100%;
+  width: 90%;
   height: 180px;
   padding: 15px;
   border: 1px solid #dcdde1;
@@ -63,13 +63,31 @@ button:hover {
   background-color: #0097e6;
 }
 
-.TextDisplay {
-  margin-top: 20px;
-  padding: 20px;
-  border-radius: 12px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
+
+
+.Keyboard {
+  margin-top: 10px;
 }
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5px;
+}
+
+.keyboard-key {
+  margin: 3px;
+  padding: 10px 15px;
+  font-size: 16px;
+  background-color: #dcdde1;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.keyboard-key:hover {
+  background-color: #7f8fa6;
+  color: white;
+}
+

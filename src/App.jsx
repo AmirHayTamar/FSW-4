@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Editor from './Editor';
-import TextDisplay from './TextDisplay';
 import Storage from './Storage';
 import './App.css';
 
@@ -12,13 +11,14 @@ const App = () => {
 
   return (
     <div className="App">
-      <h1>Text Editor</h1>
-      <TextDisplay text={text} font={font} fontSize={fontSize} textColor={textColor} />
       <Editor
         text={text}
         setText={setText}
+        font={font}
         setFont={setFont}
+        fontSize={fontSize}
         setFontSize={setFontSize}
+        textColor={textColor}
         setTextColor={setTextColor}
       />
       <Storage text={text} />
