@@ -34,6 +34,8 @@ const App = () => {
 
   const activeEditor = editors.find(e => e.id === activeId);
 
+  const [applyToAll, setApplyToAll] = useState(false);
+
   return (
     <div className="App">
       <h2>Multi-file text editor</h2>
@@ -56,9 +58,11 @@ const App = () => {
 
       <ControlPanel
         activeEditor={activeEditor}
-        onUpdate={(newData) => updateEditor(activeId, newData)}
+        onUpdate={(data) => updateEditor(activeId, data)}
         onDelete={removeEditor}
         onAdd={addEditor}
+        applyToAll={applyToAll}
+        setApplyToAll={setApplyToAll}
       />
     </div>
   );

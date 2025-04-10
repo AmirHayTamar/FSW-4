@@ -1,7 +1,17 @@
 import React from 'react';
 import Keyboard from './Keyboard';
 
-const ControlPanel = ({ activeEditor, onUpdate, onDelete, onAdd }) => {
+const ControlPanel = ({ activeEditor, onUpdate, onDelete, onAdd, applyToAll, setApplyToAll }) => {
+
+  const handleStyleChange = (prop, value) => {
+    if (applyToAll) {
+      onUpdate({ [prop]: value }); // עדכון גם בעיצוב וגם רינדור מיידי
+    } else {
+      // נשמר רק לעתיד, לא נעדכן תוכן קיים
+      onUpdate({ [prop]: value }); // העיצוב כבר ישפיע על הטקסט החדש דרך style של textarea
+    }
+  };
+
   const downloadAsFile = () => {
     const blob = new Blob([activeEditor.content], { type: 'text/plain' });
     const a = document.createElement('a');
@@ -17,18 +27,22 @@ const ControlPanel = ({ activeEditor, onUpdate, onDelete, onAdd }) => {
   return (
     <div className="ControlPanel">
       <div>
+      <button onClick={() => setApplyToAll(!applyToAll)}>
+        {applyToAll ? '🖍️ עיצוב ישפיע על כל הטקסט' : '✍️ עיצוב רק על טקסט חדש'}
+      </button>
         <label>font: </label>
-        <select value={activeEditor.font} onChange={(e) => onUpdate({ font: e.target.value })}>
+        <select value={activeEditor.font} onChange={(e) => handleStyleChange('font', e.target.value)}>
           <option value="Arial">Arial</option>
           <option value="Courier">Courier</option>
           <option value="Verdana">Verdana</option>
         </select>
 
         <label>size: </label>
-        <input type="number" value={activeEditor.fontSize} onChange={(e) => onUpdate({ fontSize: parseInt(e.target.value) })} />
+        <input type="number" value={activeEditor.fontSize} onChange={(e) => handleStyleChange('fontSize', parseInt(e.target.value))}
+ />
 
         <label>color :</label>
-        <input type="color" value={activeEditor.color} onChange={(e) => onUpdate({ color: e.target.value })} />
+        <input type="color" value={activeEditor.color} onChange={(e) => handleStyleChange('color', e.target.value)} />
       </div>
 
       <Keyboard onKeyPress={handleKeyPress} />
