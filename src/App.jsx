@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 import ControlPanel from './ControlPanel';
 import EditableTextArea from './EditableTextArea';
+import {saveFile, getAllFiles, loadFile} from './StorageUtils';
 
 const App = () => {
   const [editors, setEditors] = useState([
@@ -11,8 +12,20 @@ const App = () => {
   const [nextId, setNextId] = useState(2);
 
   const updateEditor = (id, newData) => {
-    setEditors(editors.map(e => e.id === id ? { ...e, ...newData } : e));
+    setEditors((prev) =>
+      prev.map((editor) => {
+        if (editor.id !== id) return editor;
+        const updated = { ...editor, ...newData };
+  
+        if (autoSave && fileName.trim()) {
+          saveFile(fileName, updated.content);
+        }
+  
+        return updated;
+      })
+    );
   };
+  
 
   const addEditor = () => {
     const newEditor = {
@@ -25,6 +38,7 @@ const App = () => {
     setEditors([...editors, newEditor]);
     setActiveId(nextId);
     setNextId(nextId + 1);
+    setFileList(Object.keys(getAllFiles()));
   };
 
   const removeEditor = () => {
@@ -36,6 +50,10 @@ const App = () => {
   const activeEditor = editors.find(e => e.id === activeId);
 
   const [applyToAll, setApplyToAll] = useState(false);
+
+const [fileName, setFileName] = useState('');
+const [fileList, setFileList] = useState(() => Object.keys(getAllFiles()));
+const [autoSave, setAutoSave] = useState(false);
 
   return (
     <div className="App">
@@ -57,13 +75,29 @@ const App = () => {
         ))}
       </div>
 
-      <ControlPanel
+      {/* <ControlPanel
         activeEditor={activeEditor}
         onUpdate={(data) => updateEditor(activeId, data)}
         onDelete={removeEditor}
         onAdd={addEditor}
         applyToAll={applyToAll}
         setApplyToAll={setApplyToAll}
+      /> */}
+      <ControlPanel
+        activeEditor={activeEditor}
+        onUpdate={(data) => updateEditor(activeId, data)}
+        onUpdateContent={(newContent) => updateEditor(activeId, { content: newContent })}
+        onSave={saveFile}
+        onDelete={removeEditor}
+        onLoad={loadFile}
+        onAdd={addEditor}
+        fileName={fileName}
+        setFileName={setFileName}
+        fileList={fileList}
+        applyToAll={applyToAll}
+        setApplyToAll={setApplyToAll}
+        autoSave={autoSave}
+        setAutoSave={setAutoSave}
       />
     </div>
   );

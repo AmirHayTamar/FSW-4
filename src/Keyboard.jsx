@@ -3,29 +3,35 @@
 import React, { useState } from 'react';
 
 const baseLayouts = {
-  en: [
+  en: 
+  [
     ['q','w','e','r','t','y','u','i','o','p'],
     ['a','s','d','f','g','h','j','k','l'],
-    ['z','x','c','v','b','n','m'],
-    [' ','.',',','!','?','@']
-],
-  he: [
+    ['z','x','c','v','b','n','m']
+  ],
+  he: 
+  [
     ['ק','ר','א','ט','ו','ן','ם','פ'],
     ['ש','ד','ג','כ','ע','י','ח','ל','ך'],
-    ['ז','ס','ב','ה','נ','מ','צ','ת','ץ'],
+    ['ז','ס','ב','ה','נ','מ','צ','ת','ץ']
+  ],
+  numbersAndOther:
+  [
+    ['1','2','3','4','5','6','7','8','9','0'],
     [' ','.',',','!','?','@']
-],
-  emoji: [
+  ],
+  emoji: 
+  [
     ['😀','😂','😍','😎','😭','😡','😴','👍','👎','👏'],
-    ['🔥','💥','🎉','❤️','💡','✅','❌','🤔','🥳','💻'],  ]
+    ['🔥','💥','🎉','❤️','💡','✅','❌','🤔','🥳','💻'],  
+  ]
 };
-
-const numbers = ['1','2','3','4','5','6','7','8','9','0'];
 
 const layoutLabels = {
   en: 'English',
   he: 'עברית',
-  emoji: 'אימוג\'ים'
+  emoji: 'אימוג\'ים',
+  numbersAndOther: 'מספרים וסמנים'
 };
 
 const Keyboard = ({ onKeyPress }) => {
@@ -66,26 +72,17 @@ const Keyboard = ({ onKeyPress }) => {
                 ⇧
               </button>
             )}
-            {/* <button onClick={cycleLayout} className="keyboard-key">
-              {layoutLabels[layout]}
-            </button> */}
             <div className="tooltip-wrapper">
               <button onClick={cycleLayout} className="keyboard-key">
                 {layoutLabels[layout]}
               </button>
               <span className="tooltip-text">
                 {layout === 'en' ? 'To switch to Hebrew, click' :
-                layout === 'he' ? 'To switch to emojis, click' :
+                layout === 'he' ? 'To switch to numbers and sing' :
+                layout === 'numbersAndOther' ? 'To switch to emojis, click':
                 'To switch to English, click'}
               </span>
             </div>
-          </div>
-          <div className="keyboard-numbers">
-            {numbers.map((num, i) => (
-              <button key={i} className="keyboard-key" onClick={() => handleKeyPress(num)}>
-                {num}
-              </button>
-            ))}
           </div>
         </div>
 
