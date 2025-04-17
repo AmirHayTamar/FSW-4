@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import ControlPanel from './ControlPanel';
+import EditableTextArea from './EditableTextArea';
 
 const App = () => {
   const [editors, setEditors] = useState([
@@ -41,18 +42,18 @@ const App = () => {
       <h2>Multi-file text editor</h2>
       <div className="editor-grid">
         {editors.map(editor => (
-          <textarea
-            key={editor.id}
-            value={editor.content}
-            onClick={() => setActiveId(editor.id)}
-            onChange={(e) => updateEditor(editor.id, { content: e.target.value })}
-            style={{
-              fontFamily: editor.font,
-              fontSize: editor.fontSize,
-              color: editor.color,
-              border: editor.id === activeId ? '2px solid #00a8ff' : '1px solid #ccc'
-            }}
-          />
+         <EditableTextArea
+         content={editor.content}
+         onChange={(newValue) => updateEditor(editor.id, { content: newValue })}
+         onClick={() => setActiveId(editor.id)}
+         isActive={editor.id === activeId}
+         style={{
+           fontFamily: editor.font,
+           fontSize: `${editor.fontSize}px`,
+           color: editor.color
+         }}
+       />
+       
         ))}
       </div>
 
