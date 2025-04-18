@@ -1,65 +1,4 @@
-// import React from 'react';
-// import Keyboard from './Keyboard';
-
-// const ControlPanel = ({ activeEditor, onUpdate, onDelete, onAdd, applyToAll, setApplyToAll }) => {
-
-//   const handleStyleChange = (prop, value) => {
-//     if (applyToAll) {
-//       onUpdate({ [prop]: value }); // עדכון גם בעיצוב וגם רינדור מיידי
-//     } else {
-//       // נשמר רק לעתיד, לא נעדכן תוכן קיים
-//       onUpdate({ [prop]: value }); // העיצוב כבר ישפיע על הטקסט החדש דרך style של textarea
-//     }
-//   };
-
-//   const downloadAsFile = () => {
-//     const blob = new Blob([activeEditor.content], { type: 'text/plain' });
-//     const a = document.createElement('a');
-//     a.href = URL.createObjectURL(blob);
-//     a.download = `file-${activeEditor.id}.txt`;
-//     a.click();
-//   };
-
-//   const handleKeyPress = (char) => {
-//     onUpdate({ content: activeEditor.content + char });
-//   };
-
-//   return (
-//     <div className="ControlPanel">
-//       <div>
-//       <button onClick={() => setApplyToAll(!applyToAll)}>
-//         {applyToAll ? '🖍️ עיצוב ישפיע על כל הטקסט' : '✍️ עיצוב רק על טקסט חדש'}
-//       </button>
-//         <label>font: </label>
-//         <select value={activeEditor.font} onChange={(e) => handleStyleChange('font', e.target.value)}>
-//           <option value="Arial">Arial</option>
-//           <option value="Courier">Courier</option>
-//           <option value="Verdana">Verdana</option>
-//         </select>
-
-//         <label>size: </label>
-//         <input type="number" value={activeEditor.fontSize} onChange={(e) => handleStyleChange('fontSize', parseInt(e.target.value))}
-//  />
-
-//         <label>color :</label>
-//         <input type="color" value={activeEditor.color} onChange={(e) => handleStyleChange('color', e.target.value)} />
-//       </div>
-
-//       <Keyboard onKeyPress={handleKeyPress} />
-
-//       <div>
-//         <button onClick={downloadAsFile}>⬇️ save file</button>
-//         <button onClick={() => onUpdate({ content: '' })}>🧹 cline text</button>
-//         <button onClick={onDelete}>🗑️ delete file</button>
-//         <button onClick={onAdd}>➕ add file</button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ControlPanel;
-
-import React from 'react';
+import React, { useState } from 'react';
 import Keyboard from './Keyboard';
 
 const ControlPanel = ({
@@ -76,8 +15,7 @@ const ControlPanel = ({
   applyToAll,
   setApplyToAll,
   autoSave,
-  setAutoSave,
-  editorRef
+  setAutoSave
 }) => {
   const handleStyleChange = (prop, value) => {
     onUpdate({ [prop]: value });
@@ -88,13 +26,22 @@ const ControlPanel = ({
       alert('יש להזין שם קובץ');
       return;
     }
-    onSave(fileName, activeEditor.content);
+    onSave(fileName, activeEditor); 
   };
 
+  const [selectedToLoad, setSelectedToLoad] = useState('');
+
   const handleLoad = (name) => {
-    const content = onLoad(name);
-    onUpdateContent(content);
-    setFileName(name);
+    const loaded = onLoad(name);
+    if (loaded) {
+      onUpdateContent(loaded.content);
+      onUpdate({
+        font: loaded.font,
+        fontSize: loaded.fontSize,
+        color: loaded.color
+      });
+      setFileName(name);
+    }
   };
 
   return (
@@ -119,12 +66,25 @@ const ControlPanel = ({
 
       <div>
         <label>טען קובץ קיים:</label>
-        <select onChange={(e) => handleLoad(e.target.value)} defaultValue="">
+        {/* <select onChange={(e) => handleLoad(e.target.value)} defaultValue="">
           <option value="" disabled>בחר קובץ</option>
           {fileList.map((name) => (
             <option key={name} value={name}>
               {name}
             </option>
+          ))}
+        </select> */}
+        <select
+          value={selectedToLoad}
+          onChange={(e) => {
+            const name = e.target.value;
+            setSelectedToLoad(''); // מחזיר לברירת מחדל
+            handleLoad(name);
+          }}
+        >
+          <option value="" disabled>בחר קובץ</option>
+          {fileList.map((name) => (
+            <option key={name} value={name}>{name}</option>
           ))}
         </select>
       </div>
@@ -162,17 +122,11 @@ const ControlPanel = ({
       <Keyboard
         onKeyPress={(char) => document.execCommand('insertText', false, char)}
         applyToAll={applyToAll}
-        activeEditorStyles={{
-          font: activeEditor.font,
-          fontSize: activeEditor.fontSize,
-          color: activeEditor.color
-        }}
-        editorRef={editorRef}
       />
 
       <div>
         <button onClick={onAdd}>➕ הוסף קובץ חדש</button>
-        <button onClick={onDelete}>🗑️ delete file</button>
+        <button onClick={onDelete}>🗑️ מחק קובץ</button>
       </div>
     </div>
   );

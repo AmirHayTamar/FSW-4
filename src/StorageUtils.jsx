@@ -2,13 +2,18 @@ export const getAllFiles = () => {
   return JSON.parse(localStorage.getItem('virtualFiles') || '{}');
 };
 
-export const saveFile = (fileName, content) => {
+export const loadFile = (name) => {
   const files = getAllFiles();
-  files[fileName] = content;
-  localStorage.setItem('virtualFiles', JSON.stringify(files));
+  return files[name] || null;
 };
 
-export const loadFile = (fileName) => {
+export const saveFile = (name, editorData) => {
   const files = getAllFiles();
-  return files[fileName] || '';
+  files[name] = {
+    content: editorData.content,
+    font: editorData.font,
+    fontSize: editorData.fontSize,
+    color: editorData.color
+  };
+  localStorage.setItem('virtualFiles', JSON.stringify(files));
 };
