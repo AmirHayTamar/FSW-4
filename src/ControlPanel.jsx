@@ -66,19 +66,11 @@ const ControlPanel = ({
 
       <div>
         <label>טען קובץ קיים:</label>
-        {/* <select onChange={(e) => handleLoad(e.target.value)} defaultValue="">
-          <option value="" disabled>בחר קובץ</option>
-          {fileList.map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
-          ))}
-        </select> */}
         <select
           value={selectedToLoad}
           onChange={(e) => {
             const name = e.target.value;
-            setSelectedToLoad(''); // מחזיר לברירת מחדל
+            setSelectedToLoad(''); 
             handleLoad(name);
           }}
         >
