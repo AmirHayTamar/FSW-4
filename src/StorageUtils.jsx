@@ -1,3 +1,5 @@
+import { showConfirm , hideConfirm} from './ConfirmService';
+
 export const getAllFiles = () => {
   return JSON.parse(localStorage.getItem('virtualFiles') || '{}');
 };
@@ -16,4 +18,10 @@ export const saveFile = (name, editorData) => {
     color: editorData.color
   };
   localStorage.setItem('virtualFiles', JSON.stringify(files));
+   showConfirm({
+          message: '.הקובץ נשמר בהצלחה ',
+          onConfirm: hideConfirm, // רק סוגר
+          onCancel: null,
+          confirmText: 'הבנתי'
+        });
 };
