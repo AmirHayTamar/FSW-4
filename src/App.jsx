@@ -50,16 +50,52 @@ const App = () => {
   };
 
   const removeEditor = () => {
-    setEditors(editors.filter(e => e.id !== activeId));
-    const remaining = editors.filter(e => e.id !== activeId);
-    if (remaining.length > 0) {
-      setActiveId(remaining[0].id);
-      const existingName = fileMap[remaining[0].id] || '';
-      setFileName(existingName);
+    const editorToRemove = editors.find(e => e.id === activeId);
+    const savedName = fileMap[activeId];
+  
+    if (savedName) {
+      const savedFile = loadFile(savedName);
+      const hasChanged = (
+        editorToRemove.content !== savedFile.content ||
+        editorToRemove.font !== savedFile.font ||
+        editorToRemove.fontSize !== savedFile.fontSize ||
+        editorToRemove.color !== savedFile.color
+      );
+  
+      if (hasChanged) {
+        const confirmSave = window.confirm('יש שינויים שלא נשמרו. האם ברצונך לשמור לפני המחיקה?');
+        if (confirmSave) {
+          saveFile(savedName, editorToRemove);
+          return; // לא נמחק אחרי שמירה
+        }
+      }
+    } else {
+      const shouldSave = window.confirm('האם ברצונך לשמור את הקובץ לפני המחיקה?');
+      if (shouldSave) {
+        const name = prompt('הזן שם לקובץ:');
+        if (name && name.trim()) {
+          saveFile(name.trim(), editorToRemove);
+          setFileMap(prev => ({ ...prev, [activeId]: name.trim() }));
+          setFileList(Object.keys(getAllFiles()));
+          setFileName(name.trim());
+          return;
+        }
+      }
+    }
+  
+    // מחיקה רגילה
+    const updated = editors.filter(e => e.id !== activeId);
+    setEditors(updated);
+  
+    if (updated.length > 0) {
+      const next = updated[0];
+      setActiveId(next.id);
+      setFileName(fileMap[next.id] || '');
     } else {
       setFileName('');
     }
   };
+  
 
   const saveWithName = (name, editorData) => {
     saveFile(name, editorData);
