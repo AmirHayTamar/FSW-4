@@ -1,29 +1,24 @@
-
-
 import React, { useState } from 'react';
+import { insertStyledChar } from './CursorService';
 
 const baseLayouts = {
-  en: 
-  [
+  en: [
     ['q','w','e','r','t','y','u','i','o','p'],
     ['a','s','d','f','g','h','j','k','l'],
-    ['z','x','c','v','b','n','m']
+    ['z','x','c','v','b','n','m',' ']
   ],
-  he: 
-  [
+  he: [
     ['ק','ר','א','ט','ו','ן','ם','פ'],
     ['ש','ד','ג','כ','ע','י','ח','ל','ך'],
-    ['ז','ס','ב','ה','נ','מ','צ','ת','ץ']
+    ['ז','ס','ב','ה','נ','מ','צ','ת','ץ',' ']
   ],
-  numbersAndOther:
-  [
+  numbersAndOther: [
     ['1','2','3','4','5','6','7','8','9','0'],
-    [' ','.',',','!','?','@']
+    ['.',',','!','?','@',' ']
   ],
-  emoji: 
-  [
+  emoji: [
     ['😀','😂','😍','😎','😭','😡','😴','👍','👎','👏'],
-    ['🔥','💥','🎉','❤️','💡','✅','❌','🤔','🥳','💻'],  
+    ['🔥','💥','🎉','❤️','💡','✅','❌','🤔','🥳','💻']
   ]
 };
 
@@ -31,10 +26,10 @@ const layoutLabels = {
   en: 'English',
   he: 'עברית',
   emoji: 'אימוג\'ים',
-  numbersAndOther: 'מספרים וסמנים'
+  numbersAndOther: 'מספרים וסימנים'
 };
 
-const Keyboard = ({ onKeyPress }) => {
+const Keyboard = ({ onKeyPress, applyToAll, activeEditorStyles, activeEditorId }) => {
   const [layout, setLayout] = useState('en');
   const [shift, setShift] = useState(false);
 
@@ -42,15 +37,20 @@ const Keyboard = ({ onKeyPress }) => {
     const keys = Object.keys(baseLayouts);
     const nextIndex = (keys.indexOf(layout) + 1) % keys.length;
     setLayout(keys[nextIndex]);
-    setShift(false); // reset shift on language switch
+    setShift(false);
   };
 
   const handleKeyPress = (key) => {
     if (key === '⇧') {
       setShift(!shift);
     } else {
-      onKeyPress(key);
-      if (shift) setShift(false); // optional: auto-disable after one press
+      if (applyToAll) {
+        onKeyPress(key); 
+      } else {
+        insertStyledChar(key, activeEditorStyles, activeEditorId); 
+      }
+
+      if (shift) setShift(false);
     }
   };
 
@@ -67,7 +67,7 @@ const Keyboard = ({ onKeyPress }) => {
       <div className="keyboard-area">
         <div className="keyboard-row keyboard-top-row">
           <div className="keyboard-lang">
-          {layout === 'en' && (
+            {layout === 'en' && (
               <button onClick={() => setShift(!shift)} className={`keyboard-key ${shift ? 'active' : ''}`}>
                 ⇧
               </button>
@@ -78,9 +78,9 @@ const Keyboard = ({ onKeyPress }) => {
               </button>
               <span className="tooltip-text">
                 {layout === 'en' ? 'To switch to Hebrew, click' :
-                layout === 'he' ? 'To switch to numbers and sing' :
-                layout === 'numbersAndOther' ? 'To switch to emojis, click':
-                'To switch to English, click'}
+                 layout === 'he' ? 'To switch to numbers and signs' :
+                 layout === 'numbersAndOther' ? 'To switch to emojis' :
+                 'To switch to English'}
               </span>
             </div>
           </div>
@@ -105,4 +105,3 @@ const Keyboard = ({ onKeyPress }) => {
 };
 
 export default Keyboard;
-

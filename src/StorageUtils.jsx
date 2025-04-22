@@ -20,7 +20,7 @@ export const saveFile = (name, editorData) => {
   localStorage.setItem('virtualFiles', JSON.stringify(files));
    showConfirm({
           message: '.הקובץ נשמר בהצלחה ',
-          onConfirm: hideConfirm, // רק סוגר
+          onConfirm: hideConfirm, 
           onCancel: null,
           confirmText: 'הבנתי'
         });
