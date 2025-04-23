@@ -44,12 +44,7 @@ const Keyboard = ({ onKeyPress, applyToAll, activeEditorStyles, activeEditorId }
     if (key === '⇧') {
       setShift(!shift);
     } else {
-      if (applyToAll) {
-        onKeyPress(key); 
-      } else {
-        insertStyledChar(key, activeEditorStyles, activeEditorId); 
-      }
-
+      insertStyledChar(key, activeEditorStyles, activeEditorId, applyToAll);
       if (shift) setShift(false);
     }
   };

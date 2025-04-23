@@ -45,6 +45,7 @@ const EditableTextArea = ({
       className="editable-box"
       data-id={`editor-${editorId}`}
       contentEditable
+      
       suppressContentEditableWarning
       onInput={(e) => {
         setLocalContent(e.currentTarget.innerHTML);

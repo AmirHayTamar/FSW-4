@@ -82,6 +82,35 @@ body {
   gap: 15px;
 }
 
+/* .editable-box {
+  direction: rtl;              
+  unicode-bidi: isolate;       
+  white-space: pre-wrap;
+  word-break: break-word;
+} */
+
+/* .editable-box {
+  direction: rtl;
+  unicode-bidi: isolate; 
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.editable-box span {
+  unicode-bidi: isolate;
+} */
+/* .editable-box {
+  direction: rtl;
+  unicode-bidi: isolate; 
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: white;
+  min-height: 150px;
+} */
+
+
+
 /* ============ כפתורים ============ */
 button {
   padding: 10px 20px;
