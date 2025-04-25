@@ -122,7 +122,6 @@ const addEditor = () => {
       <ControlPanel
         activeEditor={activeEditor}
         onUpdate={(data) => updateEditor(activeId, data)}
-        onUpdateContent={(value) => updateEditor(activeId, { content: value })}
         onSave={saveWithName }
         onDelete={removeEditor}
         onLoad={loadFromName }

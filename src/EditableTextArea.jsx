@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
 import { insertStyledChar, setRange, clearRange } from './CursorService';
 
-const EditableTextArea = ({
-  editorId,
-  content,
-  onChange,
-  onClick,
-  isActive,
-  style = {}
-}) => {
+const EditableTextArea = ({ editorId, content, onChange, onClick, isActive, style = {} }) => {
+  
   const [localContent, setLocalContent] = useState(content);
 
   const saveCursor = () => {
@@ -18,27 +12,27 @@ const EditableTextArea = ({
     }
   };
   
-  window.applyGlobalStyle = (style, targetId) => {
-    const box = document.querySelector(`.editable-box[data-id="editor-${targetId}"]`);
-    if (!box) {
-      console.warn(`❌ applyGlobalStyle: לא נמצא עורך עם id editor-${targetId}`);
-      return;
-    }
+  // window.applyGlobalStyle = (style, targetId) => {
+  //   const box = document.querySelector(`.editable-box[data-id="editor-${targetId}"]`);
+  //   if (!box) {
+  //     console.warn(`❌ applyGlobalStyle: לא נמצא עורך עם id editor-${targetId}`);
+  //     return;
+  //   }
   
-    const plainText = box.innerText;
+  //   const plainText = box.innerText;
   
-    const span = document.createElement('span');
-    span.innerText = plainText;
-    if (style.font) span.style.fontFamily = style.font;
-    if (style.fontSize) span.style.fontSize = `${style.fontSize}px`;
-    if (style.color) span.style.color = style.color;
+  //   const span = document.createElement('span');
+  //   span.innerText = plainText;
+  //   if (style.font) span.style.fontFamily = style.font;
+  //   if (style.fontSize) span.style.fontSize = `${style.fontSize}px`;
+  //   if (style.color) span.style.color = style.color;
   
-    box.innerHTML = '';
-    box.appendChild(span);
+  //   box.innerHTML = '';
+  //   box.appendChild(span);
   
-    const inputEvent = new Event('input', { bubbles: true });
-    box.dispatchEvent(inputEvent);
-  };
+  //   const inputEvent = new Event('input', { bubbles: true });
+  //   box.dispatchEvent(inputEvent);
+  // };
 
   return (
     <div

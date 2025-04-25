@@ -1,21 +1,12 @@
 import React from 'react';
 import Keyboard from './Keyboard';
 import { showConfirm } from './ConfirmService';
-import {
-  deleteChar,
-  deleteWord,
-  clearAll,
-  highlightChar,
-  replaceChar,
-  saveState,
-  undo
-} from './EditorCommands';
+import { applyGlobalStyle, deleteChar, deleteWord, clearAll, highlightChar, replaceChar, saveState, undo } from './EditorCommands';
 
 const ControlPanel = ({
   activeEditor,
   onUpdate,
   onAdd,
-  onUpdateContent,
   onSave,
   onDelete,
   onLoad,
@@ -29,15 +20,18 @@ const ControlPanel = ({
 }) => {
   // הגנה בסיסית
   if (!activeEditor) {
-    return <div className="ControlPanel">⛔ אין עורך פעיל כרגע</div>;
+    return <div 
+              className="ControlPanel">⛔ אין עורך פעיל כרגע
+              <button onClick={onAdd}>➕ הוסף קובץ חדש</button>
+            </div>;
   }
 
   const handleStyleChange = (prop, value) => {
     const updatedStyle = { ...activeEditor, [prop]: value };
     onUpdate({ [prop]: value });
-
-    if (applyToAll && typeof window.applyGlobalStyle === 'function') {
-      window.applyGlobalStyle({
+    
+    if (applyToAll) {
+      applyGlobalStyle({
         font: prop === 'font' ? value : activeEditor.font,
         fontSize: prop === 'fontSize' ? value : activeEditor.fontSize,
         color: prop === 'color' ? value : activeEditor.color
@@ -46,45 +40,16 @@ const ControlPanel = ({
   };
 
   const handleSave = () => {
-    if (!fileName.trim()) {
-      showConfirm({
-        message: 'יש להזין שם קובץ לפני השמירה.',
-        onConfirm: () => {},
-        onCancel: null,
-        confirmText: 'הבנתי'
-      });
-      return;
-    }
     onSave(fileName, activeEditor);
   };
 
   const handleLoad = (name) => {
-    const loaded = onLoad(name);
-    if (loaded) {
-      const box = document.querySelector(`.editable-box[data-id="editor-${activeEditor.id}"]`);
-      if (box) {
-        box.innerHTML = loaded.html;
-
-        const range = document.createRange();
-        range.selectNodeContents(box);
-        range.collapse(false);
-        const selection = window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-
-      onUpdate({
-        font: loaded.font,
-        fontSize: loaded.fontSize,
-        color: loaded.color
-      });
-
-      setFileName(name);
-    }
+    onLoad(name);
+    setFileName(name);
   };
 
   return (
-    <div className="ControlPanel">
+    <div className="ControlPanel"> 
       <div>
         <label>שם קובץ:</label>
         <input
@@ -102,7 +67,7 @@ const ControlPanel = ({
           שמירה אוטומטית
         </label>
       </div>
-
+      {/* לראות אולי לעדכן את 3 הדיבים מתחת לקומפוננטות */}
       <div>
         <label>טען קובץ קיים:</label>
         <select onChange={(e) => handleLoad(e.target.value)} defaultValue="">
@@ -114,8 +79,8 @@ const ControlPanel = ({
           ))}
         </select>
       </div>
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      {/* לראות אולי לעדכן את 3 הדיבים מתחת לקומפוננטות */}
+      <div style={{ display: 'flex', alignItems: 'center' }}>
         <div>
           <button onClick={() => setApplyToAll(!applyToAll)}>
             {applyToAll ? '🖍️ שינוי כללי' : '✍️ שינוי מקומי'}
@@ -147,7 +112,12 @@ const ControlPanel = ({
         </div>
 
         <div style={{ display: 'flex', gap: '5px' }}>
-          <button onClick={() => clearAll(activeEditor.id)}>💣</button>
+          <button onClick={() => clearAll(activeEditor.id)}>💣 מחק הכל</button>
+          <button onClick={() => deleteChar(activeEditor.id)}>❌ מחק תו</button>
+          <button onClick={() => deleteWord(activeEditor.id)}>🧹 מחק מילה</button>
+          <button onClick={() => replaceChar(activeEditor.id)}>🔁 החלפה</button>
+          <button onClick={() => undo(activeEditor.id)}>🔙 חזרה</button>
+          <button onClick={() => highlightChar(activeEditor.id)}>🔎 חיפוש</button>
         </div>
       </div>
 

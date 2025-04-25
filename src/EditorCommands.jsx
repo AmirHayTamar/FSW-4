@@ -4,9 +4,33 @@ const focusEditor = (editorId) => {
   if (box) {
     box.focus();
   }
+  else{
+    console.warn(`❌ applyGlobalStyle: לא נמצא עורך עם id editor-${editorId}`);
+    return;
+  }
 };
 
-// TextActions.js
+export const applyGlobalStyle = (style, editorId) => {
+  const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
+  if (!box) {
+    console.warn(`❌ applyGlobalStyle: לא נמצא עורך עם id editor-${editorId}`);
+    return;
+  }
+
+  const plainText = box.innerText;
+
+  const span = document.createElement('span');
+  span.innerText = plainText;
+  if (style.font) span.style.fontFamily = style.font;
+  if (style.fontSize) span.style.fontSize = `${style.fontSize}px`;
+  if (style.color) span.style.color = style.color;
+
+  box.innerHTML = '';
+  box.appendChild(span);
+
+  const inputEvent = new Event('input', { bubbles: true });
+  box.dispatchEvent(inputEvent);
+};
 
 export const highlightChar = (editorId, char) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
