@@ -5,11 +5,15 @@ import EditableTextArea from './EditableTextArea';
 import { saveFile, getAllFiles, loadFile } from './StorageUtils';
 import ConfirmDialog from './ConfirmDialog';
 import { setConfirmHandler, hideConfirm } from './ConfirmService';
+import { updateEditorUtils, createEditor, removeEditorById} from './EditorUtils';
+import { saveEditorToStorage, loadEditorFromStorage, handleEditorRemoval} from './FileUtils';
+
 
 const App = () => {
   const [editors, setEditors] = useState([
     { id: 1, content: '', font: 'Arial', fontSize: 16, color: '#000000' }
   ]);
+
   const [activeId, setActiveId] = useState(1);
   const [nextId, setNextId] = useState(2);
   const [applyToAll, setApplyToAll] = useState(false);
@@ -17,6 +21,7 @@ const App = () => {
   const [fileMap, setFileMap] = useState({});
   const [fileList, setFileList] = useState(() => Object.keys(getAllFiles()));
   const [autoSave, setAutoSave] = useState(false);
+
 
   const [confirmData, setConfirmData] = useState({
     isOpen: false,
@@ -33,35 +38,34 @@ const App = () => {
   const activeEditor = editors.find(e => e.id === activeId);
 
   const updateEditor = (id, newData) => {
-    setEditors(prev =>
-      prev.map(editor => {
-        if (editor.id !== id) return editor;
-        const updated = { ...editor, ...newData };
-        if (autoSave && fileName.trim()) {
-          saveFile(fileName, updated);
-        }
-        return updated;
-      })
-    );
+    setEditors(prev => updateEditorUtils(prev, id, newData, autoSave, fileName));
   };
-
-  const addEditor = () => {
-    const newEditor = {
-      id: nextId,
-      content: '',
-      font: 'Arial',
-      fontSize: 16,
-      color: '#000000'
-    };
-    setEditors([...editors, newEditor]);
-    setActiveId(nextId);
-    setFileName('');
-    setNextId(nextId + 1);
-    setFileList(Object.keys(getAllFiles()));
+  
+const addEditor = () => {
+  const newEditor = createEditor(nextId);
+  setEditors([...editors, newEditor]);
+  setActiveId(nextId);
+  setFileName('');
+  setNextId(nextId + 1);
+  setFileList(Object.keys(getAllFiles()));
+};
+ 
+  const removeEditor = () => {
+    const editorToRemove = editors.find(e => e.id === activeId);
+    handleEditorRemoval({
+      editor: editorToRemove,
+      editorId: activeId,
+      fileMap,
+      setFileMap,
+      setFileList,
+      setFileName,
+      onDeleteConfirmed: reallyRemoveEditor,
+      setConfirmData
+    });
   };
-
+  
   const reallyRemoveEditor = () => {
-    const updated = editors.filter(e => e.id !== activeId);
+    const updated = removeEditorById(editors, activeId);
     setEditors(updated);
     if (updated.length > 0) {
       const next = updated[0];
@@ -72,60 +76,14 @@ const App = () => {
     }
   };
 
-  const removeEditor = () => {
-    const editorToRemove = editors.find(e => e.id === activeId);
-    const savedName = fileMap[activeId];
-
-    if (savedName) {
-      const savedFile = loadFile(savedName);
-      const hasChanged =
-        editorToRemove.content !== savedFile.content ||
-        editorToRemove.font !== savedFile.font ||
-        editorToRemove.fontSize !== savedFile.fontSize ||
-        editorToRemove.color !== savedFile.color;
-
-      if (hasChanged) {
-        setConfirmData({
-          isOpen: true,
-          message: 'יש שינויים שלא נשמרו. האם לשמור לפני מחיקה?',
-          onConfirm: () => {
-            saveFile(savedName, editorToRemove);
-            hideConfirm();
-          },
-          onCancel: () => {
-            hideConfirm();
-            reallyRemoveEditor();
-          }
-        });
-        return;
-      }
-    } else {
-      setConfirmData({
-        isOpen: true,
-        message: 'האם לשמור את הקובץ לפני המחיקה?',
-        onConfirm: () => {
-          const name = prompt('הזן שם לקובץ:');
-          if (name && name.trim()) {
-            saveFile(name.trim(), editorToRemove);
-            setFileMap(prev => ({ ...prev, [activeId]: name.trim() }));
-            setFileList(Object.keys(getAllFiles()));
-            setFileName(name.trim());
-          }
-          hideConfirm();
-        },
-        onCancel: () => {
-          hideConfirm();
-          reallyRemoveEditor();
-        }
-      });
-      return;
-    }
-
-    reallyRemoveEditor();
+  const handleSetActiveId = (id) => {
+    setActiveId(id);
+    const existing = fileMap[id] || '';
+    setFileName(existing);
   };
 
   const saveWithName = (name, editorData) => {
-    saveFile(name, editorData);
+    saveEditorToStorage(name, activeId, editorData);
     if (!fileList.includes(name)) {
       setFileList(Object.keys(getAllFiles()));
     }
@@ -134,24 +92,10 @@ const App = () => {
   };
 
   const loadFromName = (name) => {
-    const loaded = loadFile(name);
-    if (loaded) {
-      updateEditor(activeId, {
-        content: loaded.content,
-        font: loaded.font,
-        fontSize: loaded.fontSize,
-        color: loaded.color
-      });
-      setFileMap(prev => ({ ...prev, [activeId]: name }));
-      setFileName(name);
-    }
-  };
-
-  const handleSetActiveId = (id) => {
-    setActiveId(id);
-    const existing = fileMap[id] || '';
-    setFileName(existing);
-  };
+    loadEditorFromStorage(name, activeId, updateEditor);
+    setFileMap(prev => ({ ...prev, [activeId]: name }));
+    setFileName(name);
+  };  
 
   return (
     <div className="App">
@@ -179,9 +123,9 @@ const App = () => {
         activeEditor={activeEditor}
         onUpdate={(data) => updateEditor(activeId, data)}
         onUpdateContent={(value) => updateEditor(activeId, { content: value })}
-        onSave={saveWithName}
+        onSave={saveWithName }
         onDelete={removeEditor}
-        onLoad={loadFromName}
+        onLoad={loadFromName }
         onAdd={addEditor}
         fileName={fileName}
         setFileName={setFileName}

@@ -1,7 +1,15 @@
 import React from 'react';
 import Keyboard from './Keyboard';
 import { showConfirm } from './ConfirmService';
-import { deleteChar, deleteWord, clearAll ,highlightChar, replaceChar, saveState, undo} from './EditorCommands'; // ✅ חדש
+import {
+  deleteChar,
+  deleteWord,
+  clearAll,
+  highlightChar,
+  replaceChar,
+  saveState,
+  undo
+} from './EditorCommands';
 
 const ControlPanel = ({
   activeEditor,
@@ -19,6 +27,11 @@ const ControlPanel = ({
   autoSave,
   setAutoSave
 }) => {
+  // הגנה בסיסית
+  if (!activeEditor) {
+    return <div className="ControlPanel">⛔ אין עורך פעיל כרגע</div>;
+  }
+
   const handleStyleChange = (prop, value) => {
     const updatedStyle = { ...activeEditor, [prop]: value };
     onUpdate({ [prop]: value });
@@ -28,7 +41,7 @@ const ControlPanel = ({
         font: prop === 'font' ? value : activeEditor.font,
         fontSize: prop === 'fontSize' ? value : activeEditor.fontSize,
         color: prop === 'color' ? value : activeEditor.color
-      }, activeEditor.id); 
+      }, activeEditor.id);
     }
   };
 
@@ -48,12 +61,24 @@ const ControlPanel = ({
   const handleLoad = (name) => {
     const loaded = onLoad(name);
     if (loaded) {
-      onUpdateContent(loaded.content);
+      const box = document.querySelector(`.editable-box[data-id="editor-${activeEditor.id}"]`);
+      if (box) {
+        box.innerHTML = loaded.html;
+
+        const range = document.createRange();
+        range.selectNodeContents(box);
+        range.collapse(false);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+
       onUpdate({
         font: loaded.font,
         fontSize: loaded.fontSize,
         color: loaded.color
       });
+
       setFileName(name);
     }
   };
@@ -90,7 +115,6 @@ const ControlPanel = ({
         </select>
       </div>
 
-      {/* 🔥 שורת עיצוב עם כפתורי מחיקה בצד ימין */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <button onClick={() => setApplyToAll(!applyToAll)}>
@@ -99,7 +123,7 @@ const ControlPanel = ({
 
           <label>גופן:</label>
           <select
-            value={activeEditor.font}
+            value={activeEditor.font || ''}
             onChange={(e) => handleStyleChange('font', e.target.value)}
           >
             <option value="Arial">Arial</option>
@@ -110,34 +134,21 @@ const ControlPanel = ({
           <label>גודל:</label>
           <input
             type="number"
-            value={activeEditor.fontSize}
+            value={activeEditor.fontSize || 16}
             onChange={(e) => handleStyleChange('fontSize', parseInt(e.target.value))}
           />
 
           <label>צבע:</label>
           <input
             type="color"
-            value={activeEditor.color}
+            value={activeEditor.color || '#000000'}
             onChange={(e) => handleStyleChange('color', e.target.value)}
           />
         </div>
 
         <div style={{ display: 'flex', gap: '5px' }}>
-          {/* <button onClick={() => deleteChar(activeEditor.id)}>❌</button>
-          <button onClick={() => deleteWord(activeEditor.id)}>🧹</button> */}
           <button onClick={() => clearAll(activeEditor.id)}>💣</button>
         </div>
-        {/* <div style={{ marginTop: '10px' }}>
-        <button onClick={() => highlightChar(activeEditor.id, prompt('תו לחיפוש'))}>🔍 חיפוש תו</button>
-        <button onClick={() => {
-          const fromChar = prompt('תו להחלפה');
-          const toChar = prompt('החלף ב־');
-          replaceChar(activeEditor.id, fromChar, toChar);
-        }}>🔁 החלף תו</button>
-        <button onClick={() => saveState(activeEditor.id)}>💾 שמור פעולה</button>
-        <button onClick={() => undo(activeEditor.id)}>↩️ Undo</button>
-      </div> */}
-
       </div>
 
       <Keyboard
@@ -148,7 +159,7 @@ const ControlPanel = ({
           fontSize: activeEditor.fontSize,
           color: activeEditor.color
         }}
-        activeEditorId={activeEditor.id} 
+        activeEditorId={activeEditor.id}
       />
 
       <div>
