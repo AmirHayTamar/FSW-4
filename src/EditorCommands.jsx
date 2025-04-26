@@ -1,4 +1,3 @@
-// פונקציה כללית למקד את הסמן בעורך המתאים לפי editorId
 const focusEditor = (editorId) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
   if (box) {
@@ -85,20 +84,46 @@ export const insertStyledChar = (char, style, editorId, isGlobal = false) => {
     selection.addRange(range);
   }
 };
-
-export const highlightChar = (editorId, char) => {
+export const highlightChar = (editorId) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
-  if (!box || !char) return;
+  if (!box) return;
 
-  const html = box.innerText.split('').map(c => {
-    if (c === char) {
-      return `<span style="background-color: yellow;">${c}</span>`;
+  const searchTerm = prompt('הזן תו או מילה לחיפוש:');
+  if (!searchTerm) return;
+
+  box.focus();
+
+  const fullText = Array.from(box.children).map(span => span.innerText).join('');
+
+  box.innerHTML = '';
+
+  let i = 0;
+  while (i < fullText.length) {
+    if (fullText.slice(i, i + searchTerm.length) === searchTerm) {
+      const highlightSpan = document.createElement('span');
+      highlightSpan.innerText = searchTerm;
+      highlightSpan.style.backgroundColor = 'yellow';
+      highlightSpan.setAttribute('dir', 'rtl');
+      box.appendChild(highlightSpan);
+      i += searchTerm.length;
+    } else {
+      const normalSpan = document.createElement('span');
+      normalSpan.innerText = fullText[i];
+      normalSpan.setAttribute('dir', 'rtl');
+      box.appendChild(normalSpan);
+      i += 1;
     }
-    return c;
-  }).join('');
+  }
 
-  box.innerHTML = html;
+  // מוסיפים האזנה כדי לנקות הדגשה ב-input
+  function handleInput() {
+    clearHighlights(editorId);
+    box.removeEventListener('input', handleInput);
+  }
 
+  box.addEventListener('input', handleInput);
+
+  // מחזירים את הסמן לסוף
   const selection = window.getSelection();
   const range = document.createRange();
   range.selectNodeContents(box);
@@ -107,16 +132,48 @@ export const highlightChar = (editorId, char) => {
   selection.addRange(range);
 };
 
-export const replaceChar = (editorId, fromChar, toChar) => {
+
+export const clearHighlights = (editorId) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
-  if (!box || !fromChar || !toChar) return;
+  if (!box) return;
 
-  const newHtml = box.innerText.split('').map(c => {
-    if (c === fromChar) return toChar;
-    return c;
-  }).join('');
+  const fullText = box.innerText;
 
-  box.innerText = newHtml;
+  box.innerHTML = '';
+
+  for (const char of fullText) {
+    const span = document.createElement('span');
+    span.setAttribute('dir', 'rtl');
+    span.innerText = char;
+    box.appendChild(span);
+  }
+};
+
+
+export const replaceChar = (editorId) => {
+  const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
+  if (!box) return;
+
+  const fromStr = prompt('הזן את המילה או המחרוזת שברצונך להחליף:');
+  if (!fromStr) return;
+
+  const toStr = prompt(`הזן את המילה או המחרוזת שתחליף את "${fromStr}":`);
+  if (toStr === null) return; 
+
+  box.focus();
+
+  const fullText = Array.from(box.children).map(span => span.innerText).join('');
+
+  const replacedText = fullText.split(fromStr).join(toStr);
+
+  box.innerHTML = '';
+
+  for (const char of replacedText) {
+    const span = document.createElement('span');
+    span.setAttribute('dir', 'rtl'); 
+    span.innerText = char;
+    box.appendChild(span);
+  }
 
   const selection = window.getSelection();
   const range = document.createRange();
@@ -173,41 +230,6 @@ export const deleteChar = (editorId) => {
 };
 
 
-
-
-
-
-
-// export const deleteWord = (editorId) => {
-//   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
-//   if (!box) return;
-
-//   box.focus();
-
-//   const selection = window.getSelection();
-//   if (!selection || selection.rangeCount === 0) return;
-
-//   const range = selection.getRangeAt(0);
-//   const node = range.startContainer;
-
-//   if (node.nodeType === Node.TEXT_NODE) {
-//     const offset = range.startOffset;
-//     const text = node.textContent;
-//     const subText = text.slice(0, offset);
-//     const lastSpace = subText.lastIndexOf(' ');
-//     const start = lastSpace === -1 ? 0 : lastSpace + 1;
-
-//     const newText = text.slice(0, start) + text.slice(offset);
-//     node.textContent = newText;
-
-//     const newRange = document.createRange();
-//     newRange.setStart(node, start);
-//     newRange.setEnd(node, start);
-//     selection.removeAllRanges();
-//     selection.addRange(newRange);
-//   }
-// };
-
 export const deleteWord = (editorId) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
   if (!box) return;
@@ -221,7 +243,6 @@ export const deleteWord = (editorId) => {
     lastChild.remove();
 
     if (char === ' ') {
-      // אם הגענו לרווח - מפסיקים למחוק
       break;
     }
   }
@@ -235,7 +256,6 @@ export const deleteWord = (editorId) => {
 };
 
 
-// 💣 מחיקת כל הטקסט בעורך
 export const clearAll = (editorId) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
   if (box) {

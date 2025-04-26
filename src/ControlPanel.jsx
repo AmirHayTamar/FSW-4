@@ -1,7 +1,7 @@
 import React from 'react';
 import Keyboard from './Keyboard';
 import { showConfirm } from './ConfirmService';
-import { insertStyledChar, applyGlobalStyle, deleteChar, deleteWord, clearAll, highlightChar, replaceChar, saveState, undo } from './EditorCommands';
+import { insertStyledChar, applyGlobalStyle, deleteChar, deleteWord, clearAll, highlightChar, clearHighlights  ,replaceChar, saveState, undo } from './EditorCommands';
 
 const ControlPanel = ({
   activeEditor,
@@ -66,12 +66,12 @@ const ControlPanel = ({
           />
           שמירה אוטומטית
         </label>
-      </div>
+      {/* </div> */}
       {/* לראות אולי לעדכן את 3 הדיבים מתחת לקומפוננטות */}
-      <div>
-        <label>טען קובץ קיים:</label>
+      {/* <div> */}
+        {/* <label>טען קובץ קיים:</label> */}
         <select onChange={(e) => handleLoad(e.target.value)} defaultValue="">
-          <option value="" disabled>בחר קובץ</option>
+          <option value="" disabled>בחר קובץ קיים</option>
           {fileList.map((name) => (
             <option key={name} value={name}>
               {name}
@@ -117,7 +117,8 @@ const ControlPanel = ({
           <button onClick={() => deleteWord(activeEditor.id)}>🧹 מחק מילה</button>
           <button onClick={() => replaceChar(activeEditor.id)}>🔁 החלפה</button>
           <button onClick={() => undo(activeEditor.id)}>🔙 חזרה</button>
-          <button onClick={() => highlightChar(activeEditor.id)}>🔎 חיפוש</button>
+          <button onClick={() => highlightChar(activeEditor.id)}>🔎 חיפוש</button> 
+          <button onClick={() => clearHighlights(activeEditor.id)}>❌🔎 הורדת חיפוש</button> 
         </div>
       </div>
 
