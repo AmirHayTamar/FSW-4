@@ -1,7 +1,7 @@
 import React from 'react';
 import Keyboard from './Keyboard';
 import { showConfirm } from './ConfirmService';
-import { applyGlobalStyle, deleteChar, deleteWord, clearAll, highlightChar, replaceChar, saveState, undo } from './EditorCommands';
+import { insertStyledChar, applyGlobalStyle, deleteChar, deleteWord, clearAll, highlightChar, replaceChar, saveState, undo } from './EditorCommands';
 
 const ControlPanel = ({
   activeEditor,
@@ -18,7 +18,7 @@ const ControlPanel = ({
   autoSave,
   setAutoSave
 }) => {
-  // הגנה בסיסית
+
   if (!activeEditor) {
     return <div 
               className="ControlPanel">⛔ אין עורך פעיל כרגע
@@ -122,14 +122,13 @@ const ControlPanel = ({
       </div>
 
       <Keyboard
-        onKeyPress={(char) => document.execCommand('insertText', false, char)}
-        applyToAll={applyToAll}
-        activeEditorStyles={{
-          font: activeEditor.font,
-          fontSize: activeEditor.fontSize,
-          color: activeEditor.color
-        }}
-        activeEditorId={activeEditor.id}
+        onKeyPress={(char) =>
+          insertStyledChar(char, 
+            {font: activeEditor.font,
+            fontSize: activeEditor.fontSize,
+            color: activeEditor.color},
+            activeEditor.id, applyToAll)
+        }
       />
 
       <div>

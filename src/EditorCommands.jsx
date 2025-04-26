@@ -32,6 +32,60 @@ export const applyGlobalStyle = (style, editorId) => {
   box.dispatchEvent(inputEvent);
 };
 
+export const insertStyledChar = (char, style, editorId, isGlobal = false) => {
+  const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
+  if (!box) return;
+  box.focus();
+
+  if (!isGlobal) {
+    // ✍️ שינוי מקומי – מוסיף תו בעיצוב לתוך span
+    const span = document.createElement('span');
+    span.setAttribute('dir', 'rtl'); // 👈 חובה כדי לשמור כיוון
+    span.textContent = char;
+
+    if (style.font) span.style.fontFamily = style.font;
+    if (style.fontSize) span.style.fontSize = `${style.fontSize}px`;
+    if (style.color) span.style.color = style.color;
+
+    box.appendChild(span);
+
+    // ✅ נכניס placeholder זמני כדי למקם את הסמן אחרי התו
+    const placeholder = document.createTextNode('');
+    box.appendChild(placeholder);
+
+    const range = document.createRange();
+    range.setStartAfter(placeholder);
+    range.setEndAfter(placeholder);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    placeholder.remove();
+
+  } else {
+    // 🖍️ שינוי כללי – מחליף את כל התוכן עם עיצוב כולל
+    const plainText = box.innerText + char;
+    const span = document.createElement('span');
+    span.setAttribute('dir', 'rtl'); // 👈 גם כאן
+    span.innerText = plainText;
+
+    if (style.font) span.style.fontFamily = style.font;
+    if (style.fontSize) span.style.fontSize = `${style.fontSize}px`;
+    if (style.color) span.style.color = style.color;
+
+    box.innerHTML = '';
+    box.appendChild(span);
+
+    // ✅ החזרת הסמן לסוף
+    const range = document.createRange();
+    range.selectNodeContents(box);
+    range.collapse(false);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+};
+
 export const highlightChar = (editorId, char) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
   if (!box || !char) return;

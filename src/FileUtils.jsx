@@ -1,54 +1,3 @@
-// import { saveFile, loadFile, getAllFiles } from './StorageUtils';
-
-// export const saveEditorToStorage = (name, activeId, editorData) => {
-//   const box = document.querySelector(`.editable-box[data-id="editor-${activeId}"]`);
-//   if (!box) return;
-
-//   saveFile(name, {
-//     content: box.innerHTML,
-//     font: editorData.font,
-//     fontSize: editorData.fontSize,
-//     color: editorData.color
-//   });
-
-// //   if (!fileList.includes(name)) {
-// //     setFileList(Object.keys(getAllFiles()));
-// //   }
-
-// //   setFileMap(prev => ({ ...prev, [activeId]: name }));
-// //   setFileName(name);
-// };
-
-
-// export const loadEditorFromStorage = (name, activeId, updateEditorCallback) => {
-//   const loaded = loadFile(name);
-//   if (!loaded) return;
-
-//   const box = document.querySelector(`.editable-box[data-id="editor-${activeId}"]`);
-//   if (box && loaded.html) {
-//     box.innerHTML = loaded.html;
-
-//     // ⬅️ גם שומרים את אותו תוכן ב־state כדי למנוע override
-//     //updateEditor(activeId, { content: loaded.html });
-
-//     const range = document.createRange();
-//     range.selectNodeContents(box);
-//     range.collapse(false);
-//     const selection = window.getSelection();
-//     selection.removeAllRanges();
-//     selection.addRange(range);
-//   }
-
-//   updateEditorCallback(activeId, {
-//     content: loaded.html,
-//     font: loaded.font,
-//     fontSize: loaded.fontSize,
-//     color: loaded.color
-//   });
-
-// //   setFileMap(prev => ({ ...prev, [activeId]: name }));
-// //   setFileName(name);
-// };
 import { saveFile, loadFile, getAllFiles } from './StorageUtils';
 import { hideConfirm, showConfirm } from './ConfirmService';
 
@@ -76,24 +25,24 @@ export const loadEditorFromStorage = (name, activeId, updateEditorCallback) => {
   const loaded = loadFile(name);
   if (!loaded) return;
 
-  const box = document.querySelector(`.editable-box[data-id="editor-${activeId}"]`);
-  if (box && loaded.html) {
-    box.innerHTML = loaded.html;
-
-    const range = document.createRange();
-    range.selectNodeContents(box);
-    range.collapse(false);
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-  }
-
   updateEditorCallback(activeId, {
     content: loaded.html,
     font: loaded.font,
     fontSize: loaded.fontSize,
     color: loaded.color
   });
+
+  // const box = document.querySelector(`.editable-box[data-id="editor-${activeId}"]`);
+  // if (box && loaded.html) {
+  //   box.innerHTML = loaded.html;
+
+  //   const range = document.createRange();
+  //   range.selectNodeContents(box);
+  //   range.collapse(false);
+  //   const selection = window.getSelection();
+  //   selection.removeAllRanges();
+  //   selection.addRange(range);
+  // }
 };
 
 /**

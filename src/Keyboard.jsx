@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { insertStyledChar } from './CursorService';
 
 const baseLayouts = {
   en: [
@@ -31,7 +30,7 @@ const layoutLabels = {
   numbersAndOther: 'מספרים וסימנים'
 };
 
-const Keyboard = ({ onKeyPress, applyToAll, activeEditorStyles, activeEditorId }) => {
+const Keyboard = ({ onKeyPress}) => {
   const [layout, setLayout] = useState('en');
   const [shift, setShift] = useState(false);
 
@@ -46,7 +45,7 @@ const Keyboard = ({ onKeyPress, applyToAll, activeEditorStyles, activeEditorId }
     if (key === '⇧') {
       setShift(!shift);
     } else {
-      insertStyledChar(key, activeEditorStyles, activeEditorId, applyToAll);
+      onKeyPress(key); 
       if (shift) setShift(false);
     }
   };
