@@ -81,7 +81,7 @@ export const handleEditorRemoval = ({
     if (changed) {
       setConfirmData({
         isOpen: true,
-        message: 'יש שינויים שלא נשמרו. האם לשמור לפני מחיקה?',
+        message: '?יש שינויים שלא נשמרו. האם לשמור לפני מחיקה',
         onConfirm: () => {
           saveFile(savedName, editor);
           hideConfirm();
@@ -96,20 +96,13 @@ export const handleEditorRemoval = ({
   } else {
     setConfirmData({
       isOpen: true,
-      message: 'האם לשמור את הקובץ לפני המחיקה?',
+      message: '?לא שמרת את הקובץ , תרצה למחוק בכל זאת',
       onConfirm: () => {
-        const name = prompt('הזן שם לקובץ:');
-        if (name && name.trim()) {
-          saveFile(name.trim(), editor);
-          setFileMap(prev => ({ ...prev, [editorId]: name.trim() }));
-          setFileList(Object.keys(getAllFiles()));
-          setFileName(name.trim());
-        }
         hideConfirm();
+        onDeleteConfirmed();
       },
       onCancel: () => {
         hideConfirm();
-        onDeleteConfirmed();
       }
     });
     return;

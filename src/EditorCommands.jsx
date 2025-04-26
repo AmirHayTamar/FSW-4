@@ -40,7 +40,7 @@ export const insertStyledChar = (char, style, editorId, isGlobal = false) => {
   if (!isGlobal) {
     // ✍️ שינוי מקומי – מוסיף תו בעיצוב לתוך span
     const span = document.createElement('span');
-    span.setAttribute('dir', 'rtl'); // 👈 חובה כדי לשמור כיוון
+    span.setAttribute('dir', 'rtl'); 
     span.textContent = char;
 
     if (style.font) span.style.fontFamily = style.font;
@@ -153,28 +153,23 @@ export const undo = (editorId) => {
 };
 
 
-
-
 export const deleteChar = (editorId) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
   if (!box) return;
 
   box.focus();
 
-  const selection = window.getSelection();
-  if (!selection || selection.rangeCount === 0) return;
-
-  const range = selection.getRangeAt(0);
-
-  // אם הסמן אחרי תו כלשהו – נבחר תו אחד אחורה
-  if (range.collapsed && range.startOffset > 0) {
-    range.setStart(range.startContainer, range.startOffset - 1);
-    selection.removeAllRanges();
-    selection.addRange(range);
+  if (box.children.length > 0) {
+    const lastChild = box.children[box.children.length - 1];
+    lastChild.remove();
   }
 
-  // מחיקה של הבחירה (תו אחד) – כאילו לחצת Backspace
-  document.execCommand('delete');
+  const selection = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(box);
+  range.collapse(false);
+  selection.removeAllRanges();
+  selection.addRange(range);
 };
 
 
@@ -183,34 +178,60 @@ export const deleteChar = (editorId) => {
 
 
 
+// export const deleteWord = (editorId) => {
+//   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
+//   if (!box) return;
+
+//   box.focus();
+
+//   const selection = window.getSelection();
+//   if (!selection || selection.rangeCount === 0) return;
+
+//   const range = selection.getRangeAt(0);
+//   const node = range.startContainer;
+
+//   if (node.nodeType === Node.TEXT_NODE) {
+//     const offset = range.startOffset;
+//     const text = node.textContent;
+//     const subText = text.slice(0, offset);
+//     const lastSpace = subText.lastIndexOf(' ');
+//     const start = lastSpace === -1 ? 0 : lastSpace + 1;
+
+//     const newText = text.slice(0, start) + text.slice(offset);
+//     node.textContent = newText;
+
+//     const newRange = document.createRange();
+//     newRange.setStart(node, start);
+//     newRange.setEnd(node, start);
+//     selection.removeAllRanges();
+//     selection.addRange(newRange);
+//   }
+// };
+
 export const deleteWord = (editorId) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
   if (!box) return;
 
   box.focus();
 
-  const selection = window.getSelection();
-  if (!selection || selection.rangeCount === 0) return;
+  while (box.children.length > 0) {
+    const lastChild = box.children[box.children.length - 1];
+    const char = lastChild.innerText || lastChild.textContent;
 
-  const range = selection.getRangeAt(0);
-  const node = range.startContainer;
+    lastChild.remove();
 
-  if (node.nodeType === Node.TEXT_NODE) {
-    const offset = range.startOffset;
-    const text = node.textContent;
-    const subText = text.slice(0, offset);
-    const lastSpace = subText.lastIndexOf(' ');
-    const start = lastSpace === -1 ? 0 : lastSpace + 1;
-
-    const newText = text.slice(0, start) + text.slice(offset);
-    node.textContent = newText;
-
-    const newRange = document.createRange();
-    newRange.setStart(node, start);
-    newRange.setEnd(node, start);
-    selection.removeAllRanges();
-    selection.addRange(newRange);
+    if (char === ' ') {
+      // אם הגענו לרווח - מפסיקים למחוק
+      break;
+    }
   }
+
+  const selection = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(box);
+  range.collapse(false);
+  selection.removeAllRanges();
+  selection.addRange(range);
 };
 
 

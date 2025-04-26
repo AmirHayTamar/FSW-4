@@ -116,12 +116,25 @@ const addEditor = () => {
   };
 
   const saveWithName = (name, editorData) => {
-    saveEditorToStorage(name, activeId, editorData);
-    if (!fileList.includes(name)) {
-      setFileList(Object.keys(getAllFiles()));
+    if(name === '')
+    {
+      setConfirmData({
+        isOpen: true,
+        message: 'על מנת לשמור נדרש להזין שם לקובץ',
+        onConfirm: () => {
+          hideConfirm();
+        },
+      });   
+
+    }else
+    {
+      saveEditorToStorage(name, activeId, editorData);
+      if (!fileList.includes(name)) {
+        setFileList(Object.keys(getAllFiles()));
+      }
+      setFileMap(prev => ({ ...prev, [activeId]: name }));
+      setFileName(name);
     }
-    setFileMap(prev => ({ ...prev, [activeId]: name }));
-    setFileName(name);
   };
 
   const loadFromName = (name) => {
