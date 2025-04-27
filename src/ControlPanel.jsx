@@ -116,9 +116,9 @@ const ControlPanel = ({
           <button onClick={() => deleteChar(activeEditor.id)}>❌ מחק תו</button>
           <button onClick={() => deleteWord(activeEditor.id)}>🧹 מחק מילה</button>
           <button onClick={() => replaceChar(activeEditor.id)}>🔁 החלפה</button>
-          <button onClick={() => undo(activeEditor.id)}>🔙 חזרה</button>
+          <button onClick={() => undo(activeEditor.id)}>🔙 undo</button>
           <button onClick={() => highlightChar(activeEditor.id)}>🔎 חיפוש</button> 
-          <button onClick={() => clearHighlights(activeEditor.id)}>❌🔎 הורדת חיפוש</button> 
+          <button onClick={() => clearHighlights(activeEditor.id)}>❌🔎 הורדת החיפוש</button> 
         </div>
       </div>
 

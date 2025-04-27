@@ -1,21 +1,10 @@
-const focusEditor = (editorId) => {
-  const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
-  if (box) {
-    box.focus();
-  }
-  else{
-    console.warn(`❌ applyGlobalStyle: לא נמצא עורך עם id editor-${editorId}`);
-    return;
-  }
-};
-
 export const applyGlobalStyle = (style, editorId) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
   if (!box) {
     console.warn(`❌ applyGlobalStyle: לא נמצא עורך עם id editor-${editorId}`);
     return;
   }
-
+  saveState(editorId);
   const plainText = box.innerText;
 
   const span = document.createElement('span');
@@ -35,7 +24,7 @@ export const insertStyledChar = (char, style, editorId, isGlobal = false) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
   if (!box) return;
   box.focus();
-
+  saveState(editorId);
   if (!isGlobal) {
     // ✍️ שינוי מקומי – מוסיף תו בעיצוב לתוך span
     const span = document.createElement('span');
@@ -84,10 +73,11 @@ export const insertStyledChar = (char, style, editorId, isGlobal = false) => {
     selection.addRange(range);
   }
 };
+
 export const highlightChar = (editorId) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
   if (!box) return;
-
+  saveState(editorId);
   const searchTerm = prompt('הזן תו או מילה לחיפוש:');
   if (!searchTerm) return;
 
@@ -132,11 +122,10 @@ export const highlightChar = (editorId) => {
   selection.addRange(range);
 };
 
-
 export const clearHighlights = (editorId) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
   if (!box) return;
-
+  saveState(editorId);
   const fullText = box.innerText;
 
   box.innerHTML = '';
@@ -149,11 +138,10 @@ export const clearHighlights = (editorId) => {
   }
 };
 
-
 export const replaceChar = (editorId) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
   if (!box) return;
-
+  saveState(editorId);
   const fromStr = prompt('הזן את המילה או המחרוזת שברצונך להחליף:');
   if (!fromStr) return;
 
@@ -213,7 +201,7 @@ export const undo = (editorId) => {
 export const deleteChar = (editorId) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
   if (!box) return;
-
+  saveState(editorId);
   box.focus();
 
   if (box.children.length > 0) {
@@ -233,7 +221,7 @@ export const deleteChar = (editorId) => {
 export const deleteWord = (editorId) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
   if (!box) return;
-
+  saveState(editorId);
   box.focus();
 
   while (box.children.length > 0) {
@@ -259,6 +247,7 @@ export const deleteWord = (editorId) => {
 export const clearAll = (editorId) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
   if (box) {
+    saveState(editorId);
     box.innerHTML = '';
     const inputEvent = new Event('input', { bubbles: true });
     box.dispatchEvent(inputEvent);
