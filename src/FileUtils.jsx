@@ -1,9 +1,6 @@
-import { saveFile, loadFile, getAllFiles } from './StorageUtils';
-import { hideConfirm, showConfirm } from './ConfirmService';
+import { saveFile, loadFile } from './StorageUtils';
+import { hideConfirm } from './ConfirmService';
 
-/**
- * שומר קובץ עורך לפי שם, כולל innerHTML
- */
 export const saveEditorToStorage = (name, activeId, editorData) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${activeId}"]`);
   if (!box) return;
@@ -18,9 +15,6 @@ export const saveEditorToStorage = (name, activeId, editorData) => {
   });
 };
 
-/**
- * טוען קובץ ל־DOM ולעורך
- */
 export const loadEditorFromStorage = (name, activeId, updateEditorCallback) => {
   const loaded = loadFile(name);
   if (!loaded) return;
@@ -45,24 +39,18 @@ export const loadEditorFromStorage = (name, activeId, updateEditorCallback) => {
   }
 };
 
-/**
- * בודק אם העורך השתנה ביחס למה שיש ב־LocalStorage
- */
+
 export const hasEditorChanged = (editor, savedName) => {
   const savedFile = loadFile(savedName);
   if (!savedFile) return true;
 
+  const box = document.querySelector(`.editable-box[data-id="editor-${editor.id}"]`);
+
   return (
-    editor.content !== savedFile.content ||
-    editor.font !== savedFile.font ||
-    editor.fontSize !== savedFile.fontSize ||
-    editor.color !== savedFile.color
+    box.innerHTML !== savedFile.html 
   );
 };
 
-/**
- * תהליך הסרה של עורך עם בדיקה – האם לשמור לפני מחיקה?
- */
 export const handleEditorRemoval = ({
   editor,
   editorId,
@@ -81,7 +69,7 @@ export const handleEditorRemoval = ({
     if (changed) {
       setConfirmData({
         isOpen: true,
-        message: '?יש שינויים שלא נשמרו. האם לשמור לפני מחיקה',
+        message: '?יש שינויים שלא נשמרו. האם לשמור לפני המחיקה',
         onConfirm: () => {
           saveFile(savedName, editor);
           hideConfirm();
@@ -108,6 +96,5 @@ export const handleEditorRemoval = ({
     return;
   }
 
-  // אם לא שונה – פשוט מוחקים
   onDeleteConfirmed();
 };

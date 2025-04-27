@@ -9,7 +9,6 @@ const ConfirmDialog = ({ isOpen, message, onConfirm, onCancel, confirmText = "א
       <div className="confirm-box">
         <p>{message}</p>
         <div className="confirm-actions">
-          {/* <button onClick={onConfirm}>{confirmText}</button> */}
           {onConfirm && (<button onClick={onConfirm}>{confirmText}</button>)}
           {onCancel && (<button onClick={onCancel}>{cancelText}</button>)}
         </div>

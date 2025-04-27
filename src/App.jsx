@@ -2,47 +2,16 @@ import React, { useState } from 'react';
 import './App.css';
 import ControlPanel from './ControlPanel';
 import EditableTextArea from './EditableTextArea';
-import { saveFile, getAllFiles, loadFile } from './StorageUtils';
+import { getAllFiles } from './StorageUtils';
 import ConfirmDialog from './ConfirmDialog';
 import { setConfirmHandler, hideConfirm } from './ConfirmService';
 import { updateEditorUtils, createEditor, removeEditorById} from './EditorUtils';
 import { saveEditorToStorage, loadEditorFromStorage, handleEditorRemoval} from './FileUtils';
 
-window.addEventListener('beforeunload', () => {
-  console.log('🔄 הדף התרענן או עמד להתרענן');
-});
-
 const App = () => {
   const [editors, setEditors] = useState([
     { id: 1, content: '', font: 'Arial', fontSize: 16, color: '#000000' }
   ]);
-  // const [editors, _setEditors] = useState([{
-  //   id: 1,
-  //   content: '',
-  //   font: 'Arial',
-  //   fontSize: 16,
-  //   color: '#000000'
-  // }]);
-  // console.log('🔎 editors during render:', editors);
-
-  // const setEditors = (newEditors) => {
-  //   console.log('🎯 setEditors called:', newEditors);
-  //   _setEditors(newEditors);
-  // };
-  
-
-//   const originalInnerHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
-
-// Object.defineProperty(Element.prototype, 'innerHTML', {
-//   set: function(value) {
-//     console.log('⚡ innerHTML שינוי:', { element: this, newValue: value , edd: editors});
-//     originalInnerHTML.set.call(this, value);
-//   },
-//   get: function() {
-//     return originalInnerHTML.get.call(this);
-//   }
-// });
-
 
   const [activeId, setActiveId] = useState(1);
   const [nextId, setNextId] = useState(2);
@@ -68,14 +37,12 @@ const App = () => {
   const activeEditor = editors.find(e => e.id === activeId);
 
   const updateEditor = (id, newData) => {
-    // console.log(' updateEditor 🛑 setEditors called with:', newData);
     setEditors(prev => updateEditorUtils(prev, id, newData, autoSave, fileName));
   };
   
 const addEditor = () => {
   const newEditor = createEditor(nextId);
   setEditors([...editors, newEditor]);
-  // console.log(' addEditor 🛑 setEditors called with:', newEditor);
   setActiveId(nextId);
   setFileName('');
   setNextId(nextId + 1);
@@ -152,7 +119,6 @@ const addEditor = () => {
           <EditableTextArea
             key={editor.id}
             editorId={editor.id}
-            content={editor.content}
             onChange={(newValue) => updateEditor(editor.id, { content: newValue })}
             onClick={() => handleSetActiveId(editor.id)}
             isActive={editor.id === activeId}

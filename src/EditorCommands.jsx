@@ -26,7 +26,6 @@ export const insertStyledChar = (char, style, editorId, isGlobal = false) => {
   box.focus();
   saveState(editorId);
   if (!isGlobal) {
-    // ✍️ שינוי מקומי – מוסיף תו בעיצוב לתוך span
     const span = document.createElement('span');
     span.setAttribute('dir', 'rtl'); 
     span.textContent = char;
@@ -37,7 +36,6 @@ export const insertStyledChar = (char, style, editorId, isGlobal = false) => {
 
     box.appendChild(span);
 
-    // ✅ נכניס placeholder זמני כדי למקם את הסמן אחרי התו
     const placeholder = document.createTextNode('');
     box.appendChild(placeholder);
 
@@ -51,10 +49,9 @@ export const insertStyledChar = (char, style, editorId, isGlobal = false) => {
     placeholder.remove();
 
   } else {
-    // 🖍️ שינוי כללי – מחליף את כל התוכן עם עיצוב כולל
     const plainText = box.innerText + char;
     const span = document.createElement('span');
-    span.setAttribute('dir', 'rtl'); // 👈 גם כאן
+    span.setAttribute('dir', 'rtl'); 
     span.innerText = plainText;
 
     if (style.font) span.style.fontFamily = style.font;
@@ -64,7 +61,6 @@ export const insertStyledChar = (char, style, editorId, isGlobal = false) => {
     box.innerHTML = '';
     box.appendChild(span);
 
-    // ✅ החזרת הסמן לסוף
     const range = document.createRange();
     range.selectNodeContents(box);
     range.collapse(false);

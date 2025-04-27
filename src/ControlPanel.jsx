@@ -1,6 +1,5 @@
 import React from 'react';
 import Keyboard from './Keyboard';
-import { showConfirm } from './ConfirmService';
 import { insertStyledChar, applyGlobalStyle, deleteChar, deleteWord, clearAll, highlightChar, clearHighlights  ,replaceChar, saveState, undo } from './EditorCommands';
 
 const ControlPanel = ({
@@ -66,9 +65,7 @@ const ControlPanel = ({
           />
           שמירה אוטומטית
         </label>
-      {/* </div> */}
       {/* לראות אולי לעדכן את 3 הדיבים מתחת לקומפוננטות */}
-      {/* <div> */}
         {/* <label>טען קובץ קיים:</label> */}
         <select onChange={(e) => handleLoad(e.target.value)} defaultValue="">
           <option value="" disabled>בחר קובץ קיים</option>
