@@ -1,6 +1,6 @@
 import React from 'react';
-import Keyboard from './Keyboard';
-import { insertStyledChar, applyGlobalStyle, deleteChar, deleteWord, clearAll, highlightChar, clearHighlights  ,replaceChar, saveState, undo } from './EditorCommands';
+import Keyboard from '../Components/Keyboard';
+import { insertStyledChar, deleteChar, deleteWord, clearAll, highlightChar ,replace, undo } from '../Logic/EditorCommands';
 
 const ControlPanel = ({
   activeEditor,
@@ -30,11 +30,11 @@ const ControlPanel = ({
     onUpdate({ [prop]: value });
     
     if (applyToAll) {
-      applyGlobalStyle({
+      insertStyledChar('',{
         font: prop === 'font' ? value : activeEditor.font,
         fontSize: prop === 'fontSize' ? value : activeEditor.fontSize,
         color: prop === 'color' ? value : activeEditor.color
-      }, activeEditor.id);
+      }, activeEditor.id,applyToAll);
     }
   };
 
@@ -66,8 +66,14 @@ const ControlPanel = ({
           שמירה אוטומטית
         </label>
       {/* לראות אולי לעדכן את 3 הדיבים מתחת לקומפוננטות */}
-        {/* <label>טען קובץ קיים:</label> */}
-        <select onChange={(e) => handleLoad(e.target.value)} defaultValue="">
+        <select
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value) {
+              handleLoad(value);
+              e.target.value = ""; // מאפס מיידית אחרי טעינה
+            }}}defaultValue=""
+        >
           <option value="" disabled>בחר קובץ קיים</option>
           {fileList.map((name) => (
             <option key={name} value={name}>
@@ -112,10 +118,10 @@ const ControlPanel = ({
           <button onClick={() => clearAll(activeEditor.id)}>💣 מחק הכל</button>
           <button onClick={() => deleteChar(activeEditor.id)}>❌ מחק תו</button>
           <button onClick={() => deleteWord(activeEditor.id)}>🧹 מחק מילה</button>
-          <button onClick={() => replaceChar(activeEditor.id)}>🔁 החלפה</button>
+          <button onClick={() => replace(activeEditor.id)}>🔁 החלפה</button>
           <button onClick={() => undo(activeEditor.id)}>🔙 undo</button>
           <button onClick={() => highlightChar(activeEditor.id)}>🔎 חיפוש</button> 
-          <button onClick={() => clearHighlights(activeEditor.id)}>❌🔎 הורדת החיפוש</button> 
+          <button onClick={() => undo(activeEditor.id)}>❌🔎 הורדת החיפוש</button> 
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css'; 
+import '../Style/App.css';
 
 const ConfirmDialog = ({ isOpen, message, onConfirm, onCancel, confirmText = "אישור", cancelText = "ביטול" }) => {
   if (!isOpen) return null;

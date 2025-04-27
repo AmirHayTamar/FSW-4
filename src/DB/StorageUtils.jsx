@@ -1,4 +1,4 @@
-import { showConfirm, hideConfirm } from './ConfirmService';
+import { showConfirm, hideConfirm } from '../Logic/ConfirmService';
 
 export const getAllFiles = () => {
   return JSON.parse(localStorage.getItem('virtualFiles') || '{}');
@@ -9,7 +9,7 @@ export const loadFile = (name) => {
   return files[name] || null;
 };
 
-export const saveFile = (name, editorData) => {
+export const saveFile = (name, editorData,autoSave) => {
   const files = getAllFiles();
 
   files[name] = {
@@ -21,9 +21,11 @@ export const saveFile = (name, editorData) => {
 
   localStorage.setItem('virtualFiles', JSON.stringify(files));
 
-  showConfirm({
-    message: '.הקובץ נשמר בהצלחה',
-    onConfirm: hideConfirm,
-    onCancel: null,
-  });
+  if(!autoSave){
+      showConfirm({
+      message: '.הקובץ נשמר בהצלחה',
+      onConfirm: hideConfirm,
+      onCancel: null,
+    });
+  }
 };

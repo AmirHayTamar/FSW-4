@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import './App.css';
+import '../Style/App.css';
 import ControlPanel from './ControlPanel';
 import EditableTextArea from './EditableTextArea';
-import { getAllFiles } from './StorageUtils';
+import { getAllFiles } from '../DB/StorageUtils';
 import ConfirmDialog from './ConfirmDialog';
-import { setConfirmHandler, hideConfirm } from './ConfirmService';
-import { updateEditorUtils, createEditor, removeEditorById} from './EditorUtils';
-import { saveEditorToStorage, loadEditorFromStorage, handleEditorRemoval} from './FileUtils';
+import { setConfirmHandler, hideConfirm } from '../Logic/ConfirmService';
+import { updateEditorUtils, createEditor, removeEditorById} from '../Logic/EditorUtils';
+import { saveEditorToStorage, loadEditorFromStorage, handleEditorRemoval} from '../Logic/FileUtils';
 
 const App = () => {
   const [editors, setEditors] = useState([
@@ -48,25 +48,20 @@ const addEditor = () => {
   setNextId(nextId + 1);
   setFileList(Object.keys(getAllFiles()));
 };
- 
+
   const removeEditor = () => {
     const editorToRemove = editors.find(e => e.id === activeId);
     handleEditorRemoval({
       editor: editorToRemove,
       editorId: activeId,
       fileMap,
-      setFileMap,
-      setFileList,
-      setFileName,
       onDeleteConfirmed: reallyRemoveEditor,
-      setConfirmData
     });
   };
   
   const reallyRemoveEditor = () => {
       const updated = removeEditorById(editors, activeId);
       setEditors(updated);
-      // console.log(' reallyRemoveEditor 🛑 setEditors called with:', updated);
       if (updated.length > 0) {
         const next = updated[0];
         setActiveId(next.id);
@@ -145,6 +140,7 @@ const addEditor = () => {
         setApplyToAll={setApplyToAll}
         autoSave={autoSave}
         setAutoSave={setAutoSave}
+        setConfirmData={setConfirmData}
       />
 
       <ConfirmDialog

@@ -1,5 +1,5 @@
-import { saveFile, loadFile } from './StorageUtils';
-import { hideConfirm } from './ConfirmService';
+import { saveFile, loadFile } from '../DB/StorageUtils';
+import { hideConfirm } from '../Logic/ConfirmService';
 
 export const saveEditorToStorage = (name, activeId, editorData) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${activeId}"]`);
@@ -57,9 +57,6 @@ export const handleEditorRemoval = ({
   fileMap,
   onDeleteConfirmed,
   setConfirmData,
-  setFileMap,
-  setFileList,
-  setFileName
 }) => {
   const savedName = fileMap[editorId];
 

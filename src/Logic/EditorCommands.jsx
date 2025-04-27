@@ -1,31 +1,9 @@
-export const applyGlobalStyle = (style, editorId) => {
-  const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
-  if (!box) {
-    console.warn(`❌ applyGlobalStyle: לא נמצא עורך עם id editor-${editorId}`);
-    return;
-  }
-  saveState(editorId);
-  const plainText = box.innerText;
-
-  const span = document.createElement('span');
-  span.innerText = plainText;
-  if (style.font) span.style.fontFamily = style.font;
-  if (style.fontSize) span.style.fontSize = `${style.fontSize}px`;
-  if (style.color) span.style.color = style.color;
-
-  box.innerHTML = '';
-  box.appendChild(span);
-
-  const inputEvent = new Event('input', { bubbles: true });
-  box.dispatchEvent(inputEvent);
-};
-
 export const insertStyledChar = (char, style, editorId, isGlobal = false) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
   if (!box) return;
   box.focus();
   saveState(editorId);
-  if (!isGlobal) {
+  if (!isGlobal || char === ' ') {
     const span = document.createElement('span');
     span.setAttribute('dir', 'rtl'); 
     span.textContent = char;
@@ -49,17 +27,19 @@ export const insertStyledChar = (char, style, editorId, isGlobal = false) => {
     placeholder.remove();
 
   } else {
-    const plainText = box.innerText + char;
-    const span = document.createElement('span');
-    span.setAttribute('dir', 'rtl'); 
-    span.innerText = plainText;
-
-    if (style.font) span.style.fontFamily = style.font;
-    if (style.fontSize) span.style.fontSize = `${style.fontSize}px`;
-    if (style.color) span.style.color = style.color;
-
-    box.innerHTML = '';
-    box.appendChild(span);
+    const plainText = box.textContent + char;
+     box.innerHTML = '';
+    for (const char of plainText) {
+      const span = document.createElement('span');
+      span.setAttribute('dir', 'rtl');
+      span.textContent = char;
+    
+      if (style.font) span.style.fontFamily = style.font;
+      if (style.fontSize) span.style.fontSize = `${style.fontSize}px`;
+      if (style.color) span.style.color = style.color;
+    
+      box.appendChild(span);
+    }
 
     const range = document.createRange();
     range.selectNodeContents(box);
@@ -101,15 +81,6 @@ export const highlightChar = (editorId) => {
     }
   }
 
-  // מוסיפים האזנה כדי לנקות הדגשה ב-input
-  function handleInput() {
-    clearHighlights(editorId);
-    box.removeEventListener('input', handleInput);
-  }
-
-  box.addEventListener('input', handleInput);
-
-  // מחזירים את הסמן לסוף
   const selection = window.getSelection();
   const range = document.createRange();
   range.selectNodeContents(box);
@@ -118,46 +89,61 @@ export const highlightChar = (editorId) => {
   selection.addRange(range);
 };
 
-export const clearHighlights = (editorId) => {
+export const replace = (editorId) => {
   const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
   if (!box) return;
   saveState(editorId);
-  const fullText = box.innerText;
 
-  box.innerHTML = '';
-
-  for (const char of fullText) {
-    const span = document.createElement('span');
-    span.setAttribute('dir', 'rtl');
-    span.innerText = char;
-    box.appendChild(span);
-  }
-};
-
-export const replaceChar = (editorId) => {
-  const box = document.querySelector(`.editable-box[data-id="editor-${editorId}"]`);
-  if (!box) return;
-  saveState(editorId);
   const fromStr = prompt('הזן את המילה או המחרוזת שברצונך להחליף:');
   if (!fromStr) return;
 
   const toStr = prompt(`הזן את המילה או המחרוזת שתחליף את "${fromStr}":`);
-  if (toStr === null) return; 
+  if (toStr === null) return;
 
   box.focus();
 
-  const fullText = Array.from(box.children).map(span => span.innerText).join('');
+  const spans = Array.from(box.children);
+  const charList = []; 
 
-  const replacedText = fullText.split(fromStr).join(toStr);
+  spans.forEach(span => {
+    const text = span.innerText;
+    for (const char of text) {
+      charList.push({ char, span });
+    }
+  });
+
+  const fullText = charList.map(c => c.char).join('');
+
+  const indexesToReplace = [];
+  let searchIndex = 0;
+  while (searchIndex <= fullText.length - fromStr.length) {
+    if (fullText.slice(searchIndex, searchIndex + fromStr.length) === fromStr) {
+      indexesToReplace.push(searchIndex);
+      searchIndex += fromStr.length;
+    } else {
+      searchIndex += 1;
+    }
+  }
+
+  const fragment = document.createDocumentFragment();
+  let i = 0;
+  while (i < charList.length) {
+    if (indexesToReplace.includes(i)) {
+      const sourceSpan = charList[i].span;
+      const newSpan = sourceSpan.cloneNode();
+      newSpan.innerText = toStr;
+      fragment.appendChild(newSpan);
+      i += fromStr.length; 
+    } else {
+      const originalSpan = charList[i].span.cloneNode();
+      originalSpan.innerText = charList[i].char;
+      fragment.appendChild(originalSpan);
+      i += 1;
+    }
+  }
 
   box.innerHTML = '';
-
-  for (const char of replacedText) {
-    const span = document.createElement('span');
-    span.setAttribute('dir', 'rtl'); 
-    span.innerText = char;
-    box.appendChild(span);
-  }
+  box.appendChild(fragment);
 
   const selection = window.getSelection();
   const range = document.createRange();
