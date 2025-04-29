@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import App from './App';
-import { registerUser, loginUser } from '../DB/StorageUtils'; // כמובן נתאים את הנתיב
+import { registerUser, loginUser } from '../DB/StorageUtils';
 import { setCurrentUserUtils} from '../DB/StorageUtils';
 
 const LoginPage = () => {

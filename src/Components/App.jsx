@@ -11,7 +11,6 @@ import LoginPage from './LoginPage';
 
 
 const App = ({currentUser}) => {
-  // const [currentUser, setCurrentUser] = useState(getcurrentUser());
   console.log('App loaded with currentUser:', currentUser);
 
   const [editors, setEditors] = useState([
