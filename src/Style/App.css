@@ -13,6 +13,56 @@ body {
   text-align: center;
 }
 
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px;
+}
+
+.app-header h2 {
+  margin: 0;
+  text-align: center;
+  flex-grow: 1;
+}
+
+.app-header button {
+  min-width: 75px;
+}
+
+/* =============== LoginPage ============== */
+
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 100px;
+}
+
+.login-page h2 {
+  margin-bottom: 20px;
+}
+
+.login-page input {
+  width: 250px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.login-page button {
+  margin: 5px;
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.login-page button:hover {
+  background-color: #f0f0f0;
+}
+
+
 /* ========== אזור הטקסטים (Scroll אופקי) ========== */
 .editor-grid {
   display: flex;

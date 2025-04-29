@@ -11,12 +11,13 @@ export const updateEditorUtils = (editors, id, newData, autoSave, fileName) => {
   });
 };
 
-export const createEditor = (nextId) => ({
+export const createEditor = (nextId,currentUser) => ({
   id: nextId,
   content: '',
   font: 'Arial',
   fontSize: 16,
-  color: '#000000'
+  color: '#000000',
+  userName: currentUser
 });
 
 export const removeEditorById = (editors, idToRemove) => {

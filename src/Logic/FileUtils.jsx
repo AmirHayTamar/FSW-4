@@ -11,19 +11,21 @@ export const saveEditorToStorage = (name, activeId, editorData) => {
     content: htmlContent,
     font: editorData.font,
     fontSize: editorData.fontSize,
-    color: editorData.color
+    color: editorData.color,
+    userName : editorData.userName
   });
 };
 
-export const loadEditorFromStorage = (name, activeId, updateEditorCallback) => {
-  const loaded = loadFile(name);
+export const loadEditorFromStorage = (name, activeId, updateEditorCallback,currentUser) => {
+  const loaded = loadFile(name,currentUser);
   if (!loaded) return;
 
   updateEditorCallback(activeId, {
     content: loaded.html,
     font: loaded.font,
     fontSize: loaded.fontSize,
-    color: loaded.color
+    color: loaded.color,
+    userName : loaded.userName
   });
 
   const box = document.querySelector(`.editable-box[data-id="editor-${activeId}"]`);
@@ -41,7 +43,7 @@ export const loadEditorFromStorage = (name, activeId, updateEditorCallback) => {
 
 
 export const hasEditorChanged = (editor, savedName) => {
-  const savedFile = loadFile(savedName);
+  const savedFile = loadFile(savedName,editor.userName);
   if (!savedFile) return true;
 
   const box = document.querySelector(`.editable-box[data-id="editor-${editor.id}"]`);

@@ -2,15 +2,20 @@ import React, { useState } from 'react';
 import '../Style/App.css';
 import ControlPanel from './ControlPanel';
 import EditableTextArea from './EditableTextArea';
-import { getAllFiles } from '../DB/StorageUtils';
+import { getAllFiles ,getcurrentUser ,setCurrentUserUtils} from '../DB/StorageUtils';
 import ConfirmDialog from './ConfirmDialog';
 import { setConfirmHandler, hideConfirm } from '../Logic/ConfirmService';
 import { updateEditorUtils, createEditor, removeEditorById} from '../Logic/EditorUtils';
 import { saveEditorToStorage, loadEditorFromStorage, handleEditorRemoval} from '../Logic/FileUtils';
+import LoginPage from './LoginPage'; 
 
-const App = () => {
+
+const App = ({currentUser}) => {
+  // const [currentUser, setCurrentUser] = useState(getcurrentUser());
+  console.log('App loaded with currentUser:', currentUser);
+
   const [editors, setEditors] = useState([
-    { id: 1, content: '', font: 'Arial', fontSize: 16, color: '#000000' }
+    { id: 1, content: '', font: 'Arial', fontSize: 16, color: '#000000',userName: currentUser }
   ]);
 
   const [activeId, setActiveId] = useState(1);
@@ -18,8 +23,9 @@ const App = () => {
   const [applyToAll, setApplyToAll] = useState(false);
   const [fileName, setFileName] = useState('');
   const [fileMap, setFileMap] = useState({});
-  const [fileList, setFileList] = useState(() => Object.keys(getAllFiles()));
+  const [fileList, setFileList] = useState(() => Object.keys(getAllFiles(currentUser)));
   const [autoSave, setAutoSave] = useState(false);
+  const [connected, setConnected] = useState(true);
 
 
   const [confirmData, setConfirmData] = useState({
@@ -41,12 +47,12 @@ const App = () => {
   };
   
 const addEditor = () => {
-  const newEditor = createEditor(nextId);
+  const newEditor = createEditor(nextId,currentUser);
   setEditors([...editors, newEditor]);
   setActiveId(nextId);
   setFileName('');
   setNextId(nextId + 1);
-  setFileList(Object.keys(getAllFiles()));
+  setFileList(Object.keys(getAllFiles(currentUser)));
 };
 
   const removeEditor = () => {
@@ -56,6 +62,7 @@ const addEditor = () => {
       editorId: activeId,
       fileMap,
       onDeleteConfirmed: reallyRemoveEditor,
+      setConfirmData,
     });
   };
   
@@ -92,7 +99,7 @@ const addEditor = () => {
     {
       saveEditorToStorage(name, activeId, editorData);
       if (!fileList.includes(name)) {
-        setFileList(Object.keys(getAllFiles()));
+        setFileList(Object.keys(getAllFiles(currentUser)));
       }
       setFileMap(prev => ({ ...prev, [activeId]: name }));
       setFileName(name);
@@ -100,31 +107,52 @@ const addEditor = () => {
   };
 
   const loadFromName = (name) => {
-    loadEditorFromStorage(name, activeId, updateEditor);
+    loadEditorFromStorage(name, activeId, updateEditor,currentUser);
     setFileMap(prev => ({ ...prev, [activeId]: name }));
     setFileName(name);
   };  
 
+  const handleLogout = () => {
+    setCurrentUserUtils('')
+    setConnected(false);
+    return <LoginPage/>;
+    };
+
+    if(!connected){
+      return <LoginPage/>;
+
+    }
+
   return (
     <div className="App">
-      <h2>Multi-file text editor</h2>
+      <div className="app-header">
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <span className="user-greeting">Hello, {currentUser}</span>
+          <button onClick={handleLogout}>התנתק</button>
+        </div>
 
-      <div className="editor-grid">
-        {editors.map(editor => (
-          <EditableTextArea
-            key={editor.id}
-            editorId={editor.id}
-            onChange={(newValue) => updateEditor(editor.id, { content: newValue })}
-            onClick={() => handleSetActiveId(editor.id)}
-            isActive={editor.id === activeId}
-            style={{
-              fontFamily: editor.font,
-              fontSize: `${editor.fontSize}px`,
-              color: editor.color
-            }}
-          />
-        ))}
+        <h2>Multi-file text editor</h2>
+
+        <div style={{ width: '200px' }}></div> {/* לאיזון */}
       </div>
+
+
+        <div className="editor-grid">
+          {editors.map(editor => (
+            <EditableTextArea
+              key={editor.id}
+              editorId={editor.id}
+              onChange={(newValue) => updateEditor(editor.id, { content: newValue })}
+              onClick={() => handleSetActiveId(editor.id)}
+              isActive={editor.id === activeId}
+              style={{
+                fontFamily: editor.font,
+                fontSize: `${editor.fontSize}px`,
+                color: editor.color
+              }}
+            />
+          ))}
+        </div>
 
       <ControlPanel
         activeEditor={activeEditor}
